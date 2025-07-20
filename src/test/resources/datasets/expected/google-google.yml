@@ -1,0 +1,4 @@
+shortened_url:
+- id: "regex:\\d+"
+  url: "https://google.com"
+  shortened: "google"
