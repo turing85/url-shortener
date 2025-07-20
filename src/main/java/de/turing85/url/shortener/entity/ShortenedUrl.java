@@ -1,6 +1,7 @@
 package de.turing85.url.shortener.entity;
 
 import java.net.URL;
+import java.util.Objects;
 import java.util.Optional;
 
 import jakarta.persistence.Column;
@@ -20,13 +21,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
+import org.jspecify.annotations.Nullable;
 
 @Entity
 @Table(schema = "public", name = "shortened_url",
     uniqueConstraints = {
         @UniqueConstraint(name = "shortened_url__unique__url", columnNames = "url"),
         @UniqueConstraint(name = "shortened_url__unique__shortened", columnNames = "shortened")})
-@Getter
 @Setter(AccessLevel.PROTECTED)
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -40,17 +41,28 @@ public class ShortenedUrl extends PanacheEntityBase {
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "UploadIdGenerator")
   @Column(name = "id")
   @Getter
+  @Nullable
   private Long id;
 
   @Column(name = "url", nullable = false)
+  @Nullable
   private String url;
 
   @Column(name = "shortened", nullable = false)
   @Length(min = 1, max = SHORTENED_MAX_LENGTH)
+  @Nullable
   private String shortened;
 
   public ShortenedUrl(final String url, final String shortened) {
     this(null, url, shortened);
+  }
+
+  public String url() {
+    return Objects.requireNonNull(url);
+  }
+
+  public String shortened() {
+    return Objects.requireNonNull(shortened);
   }
 
   public static Optional<ShortenedUrl> findByShortened(final String shortened) {
