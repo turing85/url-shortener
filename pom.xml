@@ -123,6 +123,23 @@
                             <version>${lombok.version}</version>
                         </path>
                     </annotationProcessorPaths>
+                    <compilerArgs>
+                        <arg>-Xlint:cast</arg>
+                        <arg>-Xlint:deprecation</arg>
+                        <arg>-Xlint:divzero</arg>
+                        <arg>-Xlint:empty</arg>
+                        <arg>-Xlint:fallthrough</arg>
+                        <arg>-Xlint:finally</arg>
+                        <arg>-Xlint:lossy-conversions</arg>
+                        <arg>-Xlint:rawtypes</arg>
+                        <arg>-Xlint:removal</arg>
+                        <arg>-Xlint:static</arg>
+                        <arg>-Xlint:synchronization</arg>
+                        <arg>-Xlint:this-escape</arg>
+                        <arg>-Xlint:try</arg>
+                        <arg>-Xlint:unchecked</arg>
+                        <arg>-Werror</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>
