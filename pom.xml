@@ -18,6 +18,8 @@
         <compiler-plugin.version>3.14.0</compiler-plugin.version>
         <deploy-plugin.version>3.1.4</deploy-plugin.version>
         <error-prone.version>2.40.0</error-prone.version>
+        <formatter-maven-plugin.version>2.27.0</formatter-maven-plugin.version>
+        <impsort-maven-plugin.version>1.12.0</impsort-maven-plugin.version>
         <install-plugin.version>3.1.4</install-plugin.version>
         <jar-plugin.version>3.4.2</jar-plugin.version>
         <nullaway.version>0.12.7</nullaway.version>
@@ -44,8 +46,14 @@
 
         <failsafe-plugin.skip>false</failsafe-plugin.skip>
 
+        <formatter-maven-plugin.goal>format</formatter-maven-plugin.goal>
+        <formatter-maven-plugin.skip>false</formatter-maven-plugin.skip>
+
         <git.url.https>https://github.com/turing85/url-shortener.git</git.url.https>
         <git.url.ssh>git@github.com:turing85/url-shortener.git</git.url.ssh>
+
+        <impsort-maven-plugin.goal>sort</impsort-maven-plugin.goal>
+        <impsort-maven-plugin.skip>false</impsort-maven-plugin.skip>
 
         <maven.compiler.parameters>true</maven.compiler.parameters>
         <maven.compiler.proc>full</maven.compiler.proc>
@@ -106,6 +114,47 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
+            </plugin>
+
+            <!-- phase: validate -->
+            <plugin>
+                <groupId>net.revelc.code.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+                <version>${formatter-maven-plugin.version}</version>
+                <configuration>
+                    <configFile>google-style.xml</configFile>
+                    <lineEnding>LF</lineEnding>
+                    <skip>${formatter-maven-plugin.skip}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>${formatter-maven-plugin.goal}</goal>
+                        </goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>net.revelc.code</groupId>
+                <artifactId>impsort-maven-plugin</artifactId>
+                <version>${impsort-maven-plugin.version}</version>
+                <configuration>
+                    <groups>java.,javax.,jakarta.,*</groups>
+                    <lineEnding>LF</lineEnding>
+                    <removeUnused>true</removeUnused>
+                    <skip>${impsort-maven-plugin.skip}</skip>
+                    <staticAfter>true</staticAfter>
+                    <staticGroups>java,javax.,jakarta.,*</staticGroups>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>${impsort-maven-plugin.goal}</goal>
+                        </goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- phase: compile -->
@@ -484,6 +533,18 @@
 
         <!-- ci-profiles -->
         <profile>
+            <id>ci</id>
+            <activation>
+                <property>
+                    <name>ci</name>
+                </property>
+            </activation>
+            <properties>
+                <formatter-maven-plugin.goal>validate</formatter-maven-plugin.goal>
+                <impsort-maven-plugin.goal>check</impsort-maven-plugin.goal>
+            </properties>
+        </profile>
+        <profile>
             <id>ci-native-compressed</id>
             <activation>
                 <property>
@@ -493,6 +554,8 @@
             <properties>
                 <attach-elf.skip>false</attach-elf.skip>
                 <attach-fast-jar.skip>true</attach-fast-jar.skip>
+                <formatter-maven-plugin.skip>true</formatter-maven-plugin.skip>
+                <impsort-maven-plugin.skip>true</impsort-maven-plugin.skip>
                 <quarkus.container-image.additional-tags>native</quarkus.container-image.additional-tags>
                 <quarkus.cyclonedx.skip>true</quarkus.cyclonedx.skip>
                 <quarkus.docker.dockerfile-native-path>src/main/container/Containerfile.native-distroless-compressed</quarkus.docker.dockerfile-native-path>
@@ -511,6 +574,8 @@
             </activation>
             <properties>
                 <attach-fast-jar.skip>true</attach-fast-jar.skip>
+                <formatter-maven-plugin.skip>true</formatter-maven-plugin.skip>
+                <impsort-maven-plugin.skip>true</impsort-maven-plugin.skip>
             </properties>
         </profile>
 
@@ -583,6 +648,18 @@
             </activation>
             <properties>
                 <failsafe-plugin.skip>true</failsafe-plugin.skip>
+            </properties>
+        </profile>
+        <profile>
+            <id>skip-format</id>
+            <activation>
+                <property>
+                    <name>skip-format</name>
+                </property>
+            </activation>
+            <properties>
+                <formatter-maven-plugin.skip>true</formatter-maven-plugin.skip>
+                <impsort-maven-plugin.skip>true</impsort-maven-plugin.skip>
             </properties>
         </profile>
         <profile>
