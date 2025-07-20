@@ -16,6 +16,7 @@
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
         <clean-plugin.version>3.5.0</clean-plugin.version>
         <compiler-plugin.version>3.14.0</compiler-plugin.version>
+        <dependency-check-maven.version>12.1.3</dependency-check-maven.version>
         <deploy-plugin.version>3.1.4</deploy-plugin.version>
         <error-prone.version>2.40.0</error-prone.version>
         <formatter-maven-plugin.version>2.27.0</formatter-maven-plugin.version>
@@ -43,6 +44,10 @@
         <!-- Project setup -->
         <attach-elf.skip>true</attach-elf.skip>
         <attach-fast-jar.skip>false</attach-fast-jar.skip>
+
+        <dependency-check-maven.goal>check</dependency-check-maven.goal>
+        <dependency-check-maven.skip>true</dependency-check-maven.skip>
+        <dependency-check-maven.formats>html,junit</dependency-check-maven.formats>
 
         <failsafe-plugin.skip>false</failsafe-plugin.skip>
 
@@ -390,6 +395,26 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>${dependency-check-maven.version}</version>
+                <configuration>
+                    <outputDirectory>${project.build.directory}/owasp</outputDirectory>
+                    <failBuildOnCVSS>0</failBuildOnCVSS>
+                    <formats>${dependency-check-maven.formats}</formats>
+                    <skip>${dependency-check-maven.skip}</skip>
+                    <suppressionFile>src/test/resources/owasp-dependency-check.xml</suppressionFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>${dependency-check-maven.goal}</goal>
+                        </goals>
+                        <phase>verify</phase>
+                    </execution>
+                </executions>
+            </plugin>
 
             <!-- phase: install -->
             <plugin>
@@ -530,6 +555,17 @@
                 <quarkus.container-image.tag>latest</quarkus.container-image.tag>
             </properties>
         </profile>
+        <profile>
+            <id>owasp</id>
+            <activation>
+                <property>
+                    <name>owasp</name>
+                </property>
+            </activation>
+            <properties>
+                <dependency-check-maven.skip>false</dependency-check-maven.skip>
+            </properties>
+        </profile>
 
         <!-- ci-profiles -->
         <profile>
@@ -566,6 +602,25 @@
             </properties>
         </profile>
         <profile>
+            <id>ci-owasp</id>
+            <activation>
+                <property>
+                    <name>ci-owasp</name>
+                </property>
+            </activation>
+            <properties>
+                <attach-fast-jar.skip>true</attach-fast-jar.skip>
+                <dependency-check-maven.formats>junit</dependency-check-maven.formats>
+                <dependency-check-maven.skip>false</dependency-check-maven.skip>
+                <formatter-maven-plugin.skip>true</formatter-maven-plugin.skip>
+                <impsort-maven-plugin.skip>true</impsort-maven-plugin.skip>
+                <quarkus.cyclonedx.skip>true</quarkus.cyclonedx.skip>
+                <quarkus-maven-plugin.skip>true</quarkus-maven-plugin.skip>
+                <skipTests>true</skipTests>
+                <source-plugin.skip>true</source-plugin.skip>
+            </properties>
+        </profile>
+        <profile>
             <id>ci-populate-cache</id>
             <activation>
                 <property>
@@ -574,6 +629,7 @@
             </activation>
             <properties>
                 <attach-fast-jar.skip>true</attach-fast-jar.skip>
+                <dependency-check-maven.skip>true</dependency-check-maven.skip>
                 <formatter-maven-plugin.skip>true</formatter-maven-plugin.skip>
                 <impsort-maven-plugin.skip>true</impsort-maven-plugin.skip>
             </properties>
