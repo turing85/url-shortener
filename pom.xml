@@ -18,7 +18,9 @@
         <compiler-plugin.version>3.14.0</compiler-plugin.version>
         <dependency-check-maven.version>12.1.3</dependency-check-maven.version>
         <deploy-plugin.version>3.1.4</deploy-plugin.version>
+        <enforcer-plugin.version>3.6.1</enforcer-plugin.version>
         <error-prone.version>2.40.0</error-prone.version>
+        <extra-enforcer-rules.version>1.10.0</extra-enforcer-rules.version>
         <formatter-maven-plugin.version>2.27.0</formatter-maven-plugin.version>
         <impsort-maven-plugin.version>1.12.0</impsort-maven-plugin.version>
         <install-plugin.version>3.1.4</install-plugin.version>
@@ -49,6 +51,8 @@
         <dependency-check-maven.skip>true</dependency-check-maven.skip>
         <dependency-check-maven.formats>html,junit</dependency-check-maven.formats>
 
+        <enforcer-plugin.skip>false</enforcer-plugin.skip>
+
         <failsafe-plugin.skip>false</failsafe-plugin.skip>
 
         <formatter-maven-plugin.goal>format</formatter-maven-plugin.goal>
@@ -63,6 +67,7 @@
         <maven.compiler.parameters>true</maven.compiler.parameters>
         <maven.compiler.proc>full</maven.compiler.proc>
         <maven.compiler.release>21</maven.compiler.release>
+        <maven.version>3.9.10</maven.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -122,6 +127,56 @@
             </plugin>
 
             <!-- phase: validate -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>${enforcer-plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>extra-enforcer-rules</artifactId>
+                        <version>${extra-enforcer-rules.version}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <fail>true</fail>
+                    <rules>
+                        <banCircularDependencies/>
+                        <banDependencyManagementScope/>
+                        <banDuplicatePomDependencyVersions/>
+                        <banDynamicVersions/>
+                        <bannedPlugins>
+                            <excludes>
+                                <exclude>org.apache.maven.plugins:maven-antrun-plugin</exclude>
+                            </excludes>
+                        </bannedPlugins>
+                        <dependencyConvergence/>
+                        <requireJavaVersion>
+                            <version>${maven.compiler.release}</version>
+                        </requireJavaVersion>
+                        <requireMavenVersion>
+                            <version>${maven.version}</version>
+                        </requireMavenVersion>
+                        <requirePluginVersions/>
+                        <requireReleaseDeps/>
+                        <requireSameVersions>
+                            <plugins>
+                                <plugin>org.apache.maven.plugins:maven-surefire-plugin</plugin>
+                                <plugin>org.apache.maven.plugins:maven-failsafe-plugin</plugin>
+                            </plugins>
+                        </requireSameVersions>
+                    </rules>
+                    <skip>${enforcer-plugin.skip}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>net.revelc.code.formatter</groupId>
                 <artifactId>formatter-maven-plugin</artifactId>
@@ -590,6 +645,7 @@
             <properties>
                 <attach-elf.skip>false</attach-elf.skip>
                 <attach-fast-jar.skip>true</attach-fast-jar.skip>
+                <enforcer-plugin.skip>true</enforcer-plugin.skip>
                 <formatter-maven-plugin.skip>true</formatter-maven-plugin.skip>
                 <impsort-maven-plugin.skip>true</impsort-maven-plugin.skip>
                 <quarkus.container-image.additional-tags>native</quarkus.container-image.additional-tags>
@@ -612,6 +668,7 @@
                 <attach-fast-jar.skip>true</attach-fast-jar.skip>
                 <dependency-check-maven.formats>junit</dependency-check-maven.formats>
                 <dependency-check-maven.skip>false</dependency-check-maven.skip>
+                <enforcer-plugin.skip>true</enforcer-plugin.skip>
                 <formatter-maven-plugin.skip>true</formatter-maven-plugin.skip>
                 <impsort-maven-plugin.skip>true</impsort-maven-plugin.skip>
                 <quarkus.cyclonedx.skip>true</quarkus.cyclonedx.skip>
@@ -630,6 +687,7 @@
             <properties>
                 <attach-fast-jar.skip>true</attach-fast-jar.skip>
                 <dependency-check-maven.skip>true</dependency-check-maven.skip>
+                <enforcer-plugin.skip>true</enforcer-plugin.skip>
                 <formatter-maven-plugin.skip>true</formatter-maven-plugin.skip>
                 <impsort-maven-plugin.skip>true</impsort-maven-plugin.skip>
             </properties>
@@ -693,6 +751,17 @@
             </activation>
             <properties>
                 <quarkus.cyclonedx.skip>true</quarkus.cyclonedx.skip>
+            </properties>
+        </profile>
+        <profile>
+            <id>skip-enforcer</id>
+            <activation>
+                <property>
+                    <name>skip-enforcer</name>
+                </property>
+            </activation>
+            <properties>
+                <enforcer-plugin.skip>true</enforcer-plugin.skip>
             </properties>
         </profile>
         <profile>
