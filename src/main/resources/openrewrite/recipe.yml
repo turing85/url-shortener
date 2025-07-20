@@ -1,0 +1,9 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: de.turing85.url.shortener.RandomStringUtilRewrite
+displayName: Find RandomStringUtils.randomAlphanumeric and replace with RandomStringUtils.secure().nextAlphanumeric
+recipeList:
+- org.openrewrite.text.FindAndReplace:
+    find: RandomStringUtils.randomAlphanumeric(
+    replace: RandomStringUtils.secure().nextAlphanumeric(
+    filePattern: '**/*.java'

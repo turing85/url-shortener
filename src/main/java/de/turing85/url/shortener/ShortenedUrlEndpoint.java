@@ -47,7 +47,7 @@ public final class ShortenedUrlEndpoint {
     }
 
     final String shortened = Objects.requireNonNullElseGet(shortenUrlDto.shortened(),
-        () -> RandomStringUtils.randomAlphanumeric(ShortenedUrl.SHORTENED_MAX_LENGTH));
+        () -> RandomStringUtils.secure().nextAlphanumeric(ShortenedUrl.SHORTENED_MAX_LENGTH));
     if (ShortenedUrl.count("shortened", shortened) > 0) {
       return Response.status(Response.Status.CONFLICT).build();
     }
