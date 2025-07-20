@@ -124,6 +124,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
+                <version>${clean-plugin.version}</version>
             </plugin>
 
             <!-- phase: validate -->
@@ -432,7 +433,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.5.2</version>
+                <version>${surefire-plugin.version}</version>
                 <configuration>
                     <skip>${failsafe-plugin.skip}</skip>
                     <systemPropertyVariables>
