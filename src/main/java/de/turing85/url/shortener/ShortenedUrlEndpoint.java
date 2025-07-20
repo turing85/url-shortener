@@ -38,12 +38,7 @@ public final class ShortenedUrlEndpoint {
     final Optional<ShortenedUrl> maybeShortenedUrl = ShortenedUrl.findByUrl(shortenUrlDto.url());
     if (maybeShortenedUrl.isPresent()) {
       final ShortenedUrl shortenedUrl = maybeShortenedUrl.get();
-      try {
-        return Response.ok(toDto(shortenedUrl)).location(constructLocationHeader(shortenedUrl))
-            .build();
-      } catch (MalformedURLException e) {
-        new RuntimeException(e);
-      }
+      return Response.ok(toDto(shortenedUrl)).location(constructLocationHeader(shortenedUrl)).build();
     }
 
     final String shortened = Objects.requireNonNullElseGet(shortenUrlDto.shortened(),
