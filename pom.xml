@@ -17,6 +17,7 @@
         <clean-plugin.version>3.5.0</clean-plugin.version>
         <compiler-plugin.version>3.14.0</compiler-plugin.version>
         <deploy-plugin.version>3.1.4</deploy-plugin.version>
+        <error-prone.version>2.40.0</error-prone.version>
         <install-plugin.version>3.1.4</install-plugin.version>
         <jar-plugin.version>3.4.2</jar-plugin.version>
         <resources-plugin.version>3.3.1</resources-plugin.version>
@@ -122,8 +123,16 @@
                             <artifactId>lombok</artifactId>
                             <version>${lombok.version}</version>
                         </path>
+                        <path>
+                            <groupId>com.google.errorprone</groupId>
+                            <artifactId>error_prone_core</artifactId>
+                            <version>${error-prone.version}</version>
+                        </path>
                     </annotationProcessorPaths>
                     <compilerArgs>
+                        <arg>-XDcompilePolicy=simple</arg>
+                        <arg>--should-stop=ifError=FLOW</arg>
+                        <arg>-Xplugin:ErrorProne</arg>
                         <arg>-Xlint:cast</arg>
                         <arg>-Xlint:deprecation</arg>
                         <arg>-Xlint:divzero</arg>
@@ -147,6 +156,18 @@
                 <artifactId>quarkus-maven-plugin</artifactId>
                 <version>${quarkus.platform.version}</version>
                 <configuration>
+                    <jvmArgs>
+                        --add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED
+                        --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED
+                        --add-exports jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED
+                        --add-exports jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED
+                        --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED
+                        --add-exports jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED
+                        --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED
+                        --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
+                        --add-opens jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED
+                        --add-opens jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED
+                    </jvmArgs>
                     <skip>${quarkus-maven-plugin.skip}</skip>
                 </configuration>
                 <executions>
